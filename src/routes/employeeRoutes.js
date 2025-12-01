@@ -1,44 +1,19 @@
-const express = require("express");
+// backend/src/routes/employeeRoutes.js
+import express from 'express';
+import Employee from '../models/Employee.js';
+
 const router = express.Router();
 
-const authMiddleware = require("../middleware/authMiddleware");
-const upload = require("../middleware/uploadMiddleware");
+// GET /api/v1/employees  -> list all employees
+router.get('/', async (req, res) => {
+  try {
+    const employees = await Employee.find();
+    console.log('Returning employees count:', employees.length);
+    return res.status(200).json(employees);
+  } catch (err) {
+    console.error('Get employees error:', err);
+    return res.status(500).json({ message: 'Failed to fetch employees' });
+  }
+});
 
-const {
-  getAllEmployees,
-  createEmployee,
-  getEmployeeById,
-  updateEmployeeById,
-  deleteEmployeeById,
-  searchEmployees,
-} = require("../controllers/employeeController");
-
-
-router.get("/employees/search", authMiddleware, searchEmployees);
-
-
-router.get("/employees", authMiddleware, getAllEmployees);
-
-
-router.post(
-  "/employees",
-  authMiddleware,
-  upload.single("profilePicture"),
-  createEmployee
-);
-
-
-router.get("/employees/:eid", authMiddleware, getEmployeeById);
-
-
-router.put(
-  "/employees/:eid",
-  authMiddleware,
-  upload.single("profilePicture"),
-  updateEmployeeById
-);
-
-
-router.delete("/employees", authMiddleware, deleteEmployeeById);
-
-module.exports = router;
+export default router;
